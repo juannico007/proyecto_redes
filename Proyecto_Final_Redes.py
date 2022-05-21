@@ -25,6 +25,12 @@ class Node:
         self.distance = np.inf
         self.predecessor = None
 
+    def __str__(self):
+        ret = str(self.id) + " neighs "
+        for i in self.neighs:
+            ret += str(i[0].id) + ' '
+        return  ret
+
     def add_neigh(self, node, weight):
         # Adds nodes to the neighs list of the node
         # INPUT:
@@ -364,11 +370,63 @@ def change_sparse(sparse, Z, nodos):
     #Funcion encargada de asignar los nuevos pesos al grafo para lograr un tráfico óptimo
     new_sparse = [[sparse[0,0], sparse[0,1], 1+Z[0]]]
     for i,j in zip(range(nodos**2+1, nodos**2+len(sparse)), range(len(sparse))):
-        print(sparse[j,0], sparse[j,1])
+        #print(sparse[j,0], sparse[j,1])
         tmp = [sparse[j,0], sparse[j,1], 1+Z[i]]
         new_sparse.append(tmp)
-    print(new_sparse)
+    #print(new_sparse)
     return new_sparse
+
+def create_Knm(nodos, K, Y, traffic):
+
+    #Retorna un diccionario con Kmn, xi y fkm
+    Knm = {}
+    for n in range(nodos):
+        for m in range(nodos):
+            if n!=m:
+                key = (n,m)
+                Knm[key] = [[], [], []]
+                for k in range(len(K)):
+                    if K[k][0] == n and K[k][2] == m:
+                        n_val = Knm.get(key)
+                        n_val[0].append(K[k][1])
+                        n_val[1].append(Y[k])
+                        Knm[key] = n_val
+    for key in Knm:
+        elem = Knm[key]
+        for j in elem[0]:
+            if j!= key[1]:
+                print(j, key[1])
+                next_hop = Knm[(j, key[1])]
+                elem[2].append(sum(next_hop[1]))
+            else:
+                elem[2].append(0)
+            Knm[key] = elem
+    return Knm
+                     
+def min_max (n, m, Knm):
+    arr = Knm[(n,m)]
+    n = len(arr[1])
+ 
+    # Traverse through all array elements
+    for i in range(n-1):
+    # range(n) also work but outer loop will
+    # repeat one time more than needed.
+ 
+        # Last i elements are already in place
+        for j in range(0, n-i-1):
+ 
+            # traverse the array from 0 to n-i-1
+            # Swap if the element found is greater
+            # than the next element
+            if arr[1][j] < arr[1][j + 1] :
+                arr[0][j], arr[0][j + 1] = arr[0][j + 1], arr[0][j]
+                arr[1][j], arr[1][j + 1] = arr[1][j + 1], arr[1][j]
+                arr[2][j], arr[2][j + 1] = arr[2][j + 1], arr[2][j]
+    i = 0
+    l = [0]
+    max_arr = []
+    for i in range(len(arr[0])):
+        pass
 
 
 def create_random_sparse(nodos):
