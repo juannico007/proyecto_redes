@@ -2,6 +2,7 @@
 # Universidad del Rosario - School of Engineering, Science and Technology
 # Pr. David Celeita
 from Proyecto_Final_Redes import *
+import copy
 
 # This is 0 main function. The interaction between user and tool si performed here.
 
@@ -21,18 +22,26 @@ if selection == '0':
     print("matriz de adyacencia creada")
     traffic = create_traffic_matrix(num_nodes)
     print("matriz de tráfico creada")
+    graph = Graph(rand_sparse)
+    graph.draw_graph()
+    source = int(input('Desde que nodo desea enviar un paquete?'))
+    t = int(input('Hacia que nodo desea enviar el paquete?'))
+    graph.dijkstra(source)
+
+
     c, code = create_PL_vector(rand_sparse, num_nodes)
     print("Vector del PL creado")
     A_eq, b_eq = create_PL_eq_restrictions(num_nodes, code, traffic)
     print("Restricciones de igualdad del PL creadas")
     A_ineq, b_ineq = create_PL_ineq_restrictions(num_nodes, code, rand_sparse)
-    print(len(c), len(A_eq), len(A_ineq))
+    #print(len(c), len(A_eq), len(A_ineq))
     print("Restricciones de desigualdad del PL creadas")
-    graph = Graph(rand_sparse)
-    graph.draw_graph()
-    graph.dijkstra()
+    
+
     Y = solve_lin_prob(c, A_eq, b_eq, A_ineq, b_ineq, num_nodes)
-    print("PL solucionado")
+    print("PL solucionado con resultado:")
+    print(Y.success)
+    print(Y.x)
     D_vec, code2 = create_dual_vector(rand_sparse, num_nodes, traffic)
     print("Vector del problema dual creado")
     Ad_eq, bd_eq = create_dual_eq_restrictions(code2, num_nodes)
@@ -47,6 +56,17 @@ if selection == '0':
     graph = Graph(optimal_sparse)
     graph.draw_graph()
     graph.dijkstra()
+    print(optimal_sparse)
+    Knm = create_Knm(num_nodes, code, Y.x, traffic)
+    #print(Knm)
+    
+    for i in range(num_nodes):
+        for j in range(num_nodes):
+            if i!=j:
+                min_max(i,j,Knm)
+    
+    #print(Y)
+
 
 elif selection == '1':
     is_valid = False
