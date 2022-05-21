@@ -165,13 +165,16 @@ class Graph(Node):
 
         # starting time
         start = time.time()
-        for ind in range(len(self.nodes)):
-            if self.nodes[ind].id == s:
-                break
+        nn = [i.id for i in self.nodes]
+        print(f"--------{nn}-------")
+        ind = nn.index(s)
         actual = self.nodes[ind]
         actual.distance = 0
         actual.predecessor = -1
         unvisited = copy.copy(self.nodes)
+        node_ind = Node(ind)
+        #unvisited.append(node_ind)
+        
 
         it = 0
         print("\n -------------- Execution Time per Iteration ----------- \n")
@@ -203,6 +206,7 @@ class Graph(Node):
         print("\n ----------------- Number of Iterations ---------------- \n")
         print("Dijkstra took {0} iterations to finish".format(it))
 
+        self.nodes[0], self.nodes[ind] = self.nodes[ind], self.nodes[0]
         self.draw_tree(self.routing_table())
 
 def create_traffic_matrix(nodos, t_max = 1):
