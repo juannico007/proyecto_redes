@@ -160,13 +160,15 @@ class Graph(Node):
         nx.draw(G, with_labels = True)
         plt.show()
     
-    def dijkstra(self):
+    def dijkstra(self, s):
         # Performs Dijkstra's algorithm and plots the original graph and the resulting tree
 
         # starting time
         start = time.time()
-
-        actual = self.nodes[0]
+        for ind in range(len(self.nodes)):
+            if self.nodes[ind].id == s:
+                break
+        actual = self.nodes[ind]
         actual.distance = 0
         actual.predecessor = -1
         unvisited = copy.copy(self.nodes)
