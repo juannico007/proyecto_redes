@@ -395,7 +395,6 @@ def create_Knm(nodos, K, Y, traffic):
         elem = Knm[key]
         for j in elem[0]:
             if j!= key[1]:
-                print(j, key[1])
                 next_hop = Knm[(j, key[1])]
                 elem[2].append(sum(next_hop[1]))
             else:
@@ -405,15 +404,15 @@ def create_Knm(nodos, K, Y, traffic):
                      
 def min_max (n, m, Knm):
     arr = Knm[(n,m)]
-    n = len(arr[1])
+    num = len(arr[1])
  
     # Traverse through all array elements
-    for i in range(n-1):
+    for i in range(num-1):
     # range(n) also work but outer loop will
     # repeat one time more than needed.
  
         # Last i elements are already in place
-        for j in range(0, n-i-1):
+        for j in range(0, num-i-1):
  
             # traverse the array from 0 to n-i-1
             # Swap if the element found is greater
@@ -424,9 +423,17 @@ def min_max (n, m, Knm):
                 arr[2][j], arr[2][j + 1] = arr[2][j + 1], arr[2][j]
     i = 0
     l = [0]
-    max_arr = []
+    max_arr = [[], []]
     for i in range(len(arr[0])):
-        pass
+        #print(arr[1][i])
+        max_arr[0].append(arr[0][i])
+        max_arr[1].append(((l[-1] + arr[2][i]/(i+1))/arr[1][i]))
+    if len(max_arr[0]) > 2:
+        max_arr[0] = max_arr[0][0:2]
+        max_arr[1] = max_arr[1][0:2]
+    print(n, m)
+    print(max_arr)
+    
 
 
 def create_random_sparse(nodos):
