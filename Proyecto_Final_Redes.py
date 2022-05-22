@@ -437,8 +437,7 @@ def min_max (n, m, Knm):
     if len(max_arr[0]) > 2:
         max_arr[0] = max_arr[0][0:2]
         max_arr[1] = max_arr[1][0:2]
-    print(n, m)
-    print(max_arr)
+    return max_arr
     
 
 
