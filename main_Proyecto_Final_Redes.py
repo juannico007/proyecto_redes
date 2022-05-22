@@ -26,6 +26,7 @@ if selection == '0':
     graph.draw_graph()
     source = int(input('Desde que nodo desea enviar un paquete?'))
     t = int(input('Hacia que nodo desea enviar el paquete?'))
+    print(f'El tráfico que va hacia {t} desde {source} tiene un valor de {traffic[source][t]}')
     graph.dijkstra(source)
 
 
@@ -55,15 +56,12 @@ if selection == '0':
     optimal_sparse = change_sparse(rand_sparse, Z.x, num_nodes)
     graph = Graph(optimal_sparse)
     graph.draw_graph()
-    graph.dijkstra()
-    print(optimal_sparse)
+    graph.dijkstra(source)
     Knm = create_Knm(num_nodes, code, Y.x, traffic)
     #print(Knm)
     
-    for i in range(num_nodes):
-        for j in range(num_nodes):
-            if i!=j:
-                min_max(i,j,Knm)
+    next_hops = min_max(source,t,Knm)[0]
+    print(f'Si desea enviar el paquete a {t} Se deceria distribuir el tráfico entre los routers {next_hops}')
     
     #print(Y)
 
