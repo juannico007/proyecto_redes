@@ -210,7 +210,7 @@ class Graph(Node):
         self.draw_tree(self.routing_table())
 
 def create_traffic_matrix(nodos, t_max = 1):
-    #Crea una matriz de tráfico en la red con d_(i,j)=cantidad de tráfico de el nodo i al nodo j
+    #Crea una matriz de tráfico en la red con d_(i,j)=cantidad de tráfico del nodo i al nodo j
     #Input:
     #   nodos: Numero de nodos del grafo
     #   t_max: Trafico máximo en la red
@@ -229,7 +229,7 @@ def create_PL_vector(sparse, nodos):
     #Ademas, como este es un vector de unos, crea la codificación adecuada para poder saber que significa cada variable en el output
     #Input:
     #   nodos: Numero de nodos en la red
-    #   sparse: matriz de adyacenia y pesos del grafo
+    #   sparse: matriz de adyacencia y pesos del grafo
     #Output:
     #   c: Vector de unos a introducir en el PL, cada 1 es la cantidad de tráfico dirigido a t que pasa por i,j
     #   code: Vector de codigo, una tupla de forma (i,j,t)
@@ -298,14 +298,29 @@ def create_PL_ineq_restrictions(nodos, code, sparse):
         b_ineq.append(sparse[i][2])
     return A_ineq,b_ineq
 
-def solve_lin_prob(c, A_eq, b_eq, A_ineq, b_ineq, nodos):
+def solve_lin_prob(c, A_eq, b_eq, A_ineq, b_ineq):
     #Funcion encargada de ejecutar el problema lineal
-    #res = opt.linprog(c=c, A_ub=A_ineq, b_ub=b_ineq, A_eq=A_eq[0:nodos**2-nodos], b_eq=b_eq[0:nodos**2-nodos])
+    #Input:
+    #   c: Vector del problema, en este caso, vector de 1's
+    #   A_eq: Matriz de restricciones de igualdad del problema
+    #   b_eq: Vector de restricciones de igualdad del problema
+    #   A_ineq: Matriz de restricciones de desigualdad del problema
+    #   b_ineq: Vector de restricciones de desigualdad del problema
+    #Output:
+    #   res: Resultado arrojado por el simplex, contiene una variable que indica si se resolvio 
+    #        y el vector de variables óptimas
     res = opt.linprog(c=c, A_ub=A_ineq, b_ub=b_ineq, A_eq=A_eq, b_eq=b_eq)
     return res
     
 def create_dual_vector(sparse, nodos, traffic):
-    
+    #Crea el vector que se introducirá al problema dual para encontrar los pesos óptimos para un tráfico óptimo en la red
+    #Ademas, como este es un vector de unos, crea la codificación adecuada para poder saber que significa cada variable en el output
+    #Input:
+    #   nodos: Numero de nodos en la red
+    #   sparse: matriz de adyacencia y pesos del grafo
+    #Output:
+    #   c: Vector de unos a introducir en el PL, cada 1 es la cantidad de tráfico dirigido a t que pasa por i,j
+    #   code: Vector de codigo, una tupla de forma (i,j,t)
 
     D_t = []
     for i in traffic:
@@ -327,7 +342,14 @@ def create_dual_vector(sparse, nodos, traffic):
     return D_vec, code2
 
 def create_dual_eq_restrictions(code2, nodos):
-
+    #Función encargada de crear la matriz y el vector de restricciones de igualdad para el Problema dual
+    #Input: 
+    #   nodos: Número de nodos de la red
+    #   code2: vector de codificación de las variables W_i,j
+    #Output:
+    #   Ad_eq: Matriz de restricciones de igualdad
+    #   bd_eq: vector de restricciones de igualdad
+    #   Para llevar a cabo las restricciones de forma Ad_eq*x=bd_eq
     Ad_eq = np.zeros((nodos, len(code2)))
     bd_eq = [0 for i in range(nodos)]
     c = 0
@@ -339,6 +361,15 @@ def create_dual_eq_restrictions(code2, nodos):
     return Ad_eq, bd_eq
 
 def create_dual_ineq_restrictions(code2, nodos, sparse):
+    #Función encargada de crear la matriz y el vector de restricciones de desigualdad para el Problema dual
+    #Input: 
+    #   nodos: Número de nodos de la red
+    #   code2: vector de codificación de las variables W_ij
+    #   sparse: matriz de adyacencia con pesos
+    #Output:
+    #   Ad_ineq: Matriz de restricciones de desigualdad
+    #   bd_ineq: vector de restricciones de desigualdad
+    #   Para llevar a cabo las restricciones de forma Ad_eq*x<=bd_eq
 
     Ad_ineq = np.zeros(((2*nodos)*len(sparse) + len(sparse), len(code2)))
     bd_ineq = []
@@ -382,7 +413,7 @@ def change_sparse(sparse, Z, nodos):
     #print(new_sparse)
     return new_sparse
 
-def create_Knm(nodos, K, Y, traffic):
+def create_Knm(nodos, K, Y):
 
     #Retorna un diccionario con Kmn, xi y fkm
     Knm = {}
